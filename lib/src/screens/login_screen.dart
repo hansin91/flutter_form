@@ -1,29 +1,16 @@
 import 'package:flutter/material.dart';
+import '../mixins/validation_mixin.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   final formKey = GlobalKey<FormState>();
 
   String email;
   String password;
-
-  String validateEmail(email) {
-    Pattern pattern =
-      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
-    if (!regex.hasMatch(email))
-      return 'Please enter valid email';
-    else
-      return null;
-  }
-
-  void submitForm() {
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +24,13 @@ class _LoginScreenState extends State<LoginScreen> {
               emailField(),
               passwordField(),
               SizedBox(height: 10),
-              submitButton()
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  resetButton(),
+                  submitButton()
+                ],
+              )
             ],
           ),
         )
@@ -68,12 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
         labelText: 'Password',
         hintText: 'Please input your password'
       ),
-      validator: (String value) {
-        if (value.length < 6) {
-          return 'Password must be at least 6 characters';
-        }
-        return null;
-      },
+      validator: validatePassword,
       onSaved: (value) {
         password = value;
       },
@@ -96,6 +84,21 @@ class _LoginScreenState extends State<LoginScreen> {
           print(email);
           print(password);
         }
+      }
+    );
+  }
+
+  Widget resetButton() {
+    return RaisedButton(
+      color: Colors.redAccent,
+      child: Text(
+        'Reset',
+        style: TextStyle(
+          color: Colors.black
+        ),
+      ),
+      onPressed: () {
+        formKey.currentState.reset();
       }
     );
   }
